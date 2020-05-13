@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Update a choropleth layer by zoom level</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<style>
+    .legend {
+        background-color: #fff;
+        border-radius: 3px;
+        bottom: 30px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        padding: 10px;
+        position: absolute;
+        right: 10px;
+        z-index: 1;
+    }
+
+    .legend h4 {
+        margin: 0 0 10px;
+    }
+
+    .legend div span {
+        border-radius: 50%;
+        display: inline-block;
+        height: 10px;
+        margin-right: 5px;
+        width: 10px;
+    }
+</style>
+
+<div id="map"></div>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYmFpd2VubGVpIiwiYSI6ImNpdDJqbHMyOTBzczUyeXBnbjh5NmprbDgifQ.HoGnjLH-0_HEWdlZnpDMVQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 1
+    });
+
+    var zoomThreshold = 4;
+
+    map.on('load', function() {
+		// Add GeoJSON data
+		map.addSource('source', {
+		'type': 'geojson',
+		'data': {
+			'type': 'Feature',
+			'properties': {},
+			'geometry': {
+				'type': 'Polygon',
+				'coordinates': [
+					[
+						[-30, -25],
+						[-30, 35],
+						[30, 35],
+						[30, -25],
+						[-30, -25]
+					]
+				]
+			}
+		}
+		});
+
+        // Load an image to use as the pattern
+		map.loadImage(
+			'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Cat_silhouette.svg/64px-Cat_silhouette.svg.png',
+			function(err, image) {
+				// Throw an error if something went wrong
+				if (err) throw err;
+				
+				// Declare the image
+				map.addImage('pattern', image);
+				
+				// Use it
+				map.addLayer({
+					'id': 'pattern-layer',
+					'type': 'fill',
+					'source': 'source',
+					'paint': {
+						'fill-pattern': 'pattern'
+					}
+				});
+			});
+	});
+</script>
+
+</body>
+</html>
